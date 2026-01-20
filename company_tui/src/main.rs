@@ -4,11 +4,20 @@ use std::collections::HashMap;
 fn main() {
     let mut departments: HashMap<String, Vec<String>> = HashMap::new();
     loop {
-        println!("1. Add a new department");
-        println!("2. Add a new employee");
-        println!("3. View all employees");
-        println!("4. Exit");
-        println!("Enter your choice:");
+        println!();
+        println!("========================================");
+        println!("        COMPANY TUI       ");
+        println!("========================================");
+        println!();
+        println!("  [1] Add a new department");
+        println!("  [2] Add a new employee");
+        println!("  [3] View all employees");
+        println!("  [4] Exit");
+        println!();
+        println!("----------------------------------------");
+        print!("  Enter your choice: ");
+        io::Write::flush(&mut io::stdout()).unwrap();
+
         let mut choice = String::new();
         io::stdin()
             .read_line(&mut choice)
@@ -20,7 +29,11 @@ fn main() {
 
         match choice {
             1 => {
-                println!("Enter the name of the department:");
+                println!();
+                println!("--- Add New Department ---");
+                print!("  Department name: ");
+                io::Write::flush(&mut io::stdout()).unwrap();
+
                 let mut department = String::new();
                 io::stdin()
                     .read_line(&mut department)
@@ -30,7 +43,8 @@ fn main() {
             },
             2 => {
                 if departments.is_empty() {
-                    println!("No departments found, please add a department first");
+                    println!();
+                    println!("  ! No departments found. Add one first.");
                     continue;
                 }
                 
@@ -40,10 +54,16 @@ fn main() {
                         department_names.push(department.as_str());
                     }
 
-                    println!("Choose a department from the following list (enter the number):");
+                    println!();
+                    println!("--- Add New Employee ---");
+                    println!("  Select a department:");
                     for (i, department) in department_names.iter().enumerate() {
-                        println!("{i}. {department}");
+                        println!("    [{i}] {department}");
                     }
+                    println!();
+                    print!("  Department #: ");
+                    io::Write::flush(&mut io::stdout()).unwrap();
+
                     let mut department_choice = String::new();
                     io::stdin()
                         .read_line(&mut department_choice)
@@ -51,7 +71,7 @@ fn main() {
                     let department_choice: u32 = match department_choice.trim().parse() {
                         Ok(num) => num,
                         Err(_) => {
-                            println!("Invalid department choice");
+                            println!("  ! Invalid choice");
                             continue;
                         }
                     };
@@ -59,7 +79,7 @@ fn main() {
                     match department_names.get(department_choice as usize) {
                         Some(department) => department.to_string(),
                         None => {
-                            println!("Invalid department choice");
+                            println!("  ! Invalid choice");
                             continue;
                         }
                     }
@@ -67,7 +87,9 @@ fn main() {
 
                 match departments.get_mut(&department_name) {
                     Some(department) => {
-                        println!("Enter the name of the employee:");
+                        print!("  Employee name: ");
+                        io::Write::flush(&mut io::stdout()).unwrap();
+
                         let mut employee = String::new();
                         io::stdin()
                             .read_line(&mut employee)
@@ -75,19 +97,38 @@ fn main() {
                         let employee: String = employee.trim().to_string();
                         department.push(employee);
                     }
-                    None => println!("Invalid department choice"),
+                    None => println!("  ! Invalid department"),
                 }
             },
             3 => {
-                for (department, employees) in &departments {
-                    println!("Department: {department}");
-                    for employee in employees {
-                        println!("Employee: {employee}");
+                println!();
+                println!("========================================");
+                println!("           COMPANY TUI            ");
+                println!("========================================");
+                
+                if departments.is_empty() {
+                    println!("  (empty)");
+                } else {
+                    for (department, employees) in &departments {
+                        println!();
+                        println!("  [{}]", department);
+                        if employees.is_empty() {
+                            println!("    - (no employees)");
+                        } else {
+                            for employee in employees {
+                                println!("    - {}", employee);
+                            }
+                        }
                     }
                 }
             },
-            4 => break,
-            _ => println!("Invalid choice, please try again"),
+            4 => {
+                println!();
+                println!("  Goodbye!");
+                println!();
+                break;
+            },
+            _ => println!("  ! Invalid choice"),
         }
     }
 }
