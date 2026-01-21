@@ -39,6 +39,11 @@ fn main() {
                     .read_line(&mut department)
                     .expect("Failed to read line");
                 let department: String = department.trim().to_string();
+                
+                if departments.contains_key(&department) {
+                    println!("  ! Department already exists");
+                    continue;
+                }
                 departments.insert(department, Vec::new());
             }
             2 => {
