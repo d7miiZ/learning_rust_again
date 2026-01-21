@@ -39,7 +39,7 @@ fn main() {
                     .read_line(&mut department)
                     .expect("Failed to read line");
                 let department: String = department.trim().to_string();
-                
+
                 if departments.contains_key(&department) {
                     println!("  ! Department already exists");
                     continue;
@@ -112,13 +112,21 @@ fn main() {
                 if departments.is_empty() {
                     println!("  (empty)");
                 } else {
-                    for (department, employees) in &departments {
+                    // Pretty sure this is bad rust code.
+                    let mut keys: Vec<_> = departments.keys().cloned().collect();
+                    keys.sort();
+
+                    for key in keys {
+                        let employees = departments.get_mut(&key).unwrap();
+                        employees.sort();
+
                         println!();
-                        println!("  [{}]", department);
+                        println!("  [{}]", key);
+
                         if employees.is_empty() {
                             println!("    - (no employees)");
                         } else {
-                            for employee in employees {
+                            for employee in employees.iter() {
                                 println!("    - {}", employee);
                             }
                         }
