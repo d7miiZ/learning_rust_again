@@ -1,5 +1,5 @@
-use std::io;
 use std::collections::HashMap;
+use std::io;
 
 fn main() {
     let mut departments: HashMap<String, Vec<String>> = HashMap::new();
@@ -40,48 +40,46 @@ fn main() {
                     .expect("Failed to read line");
                 let department: String = department.trim().to_string();
                 departments.insert(department, Vec::new());
-            },
+            }
             2 => {
                 if departments.is_empty() {
                     println!();
                     println!("  ! No departments found. Add one first.");
                     continue;
                 }
-                
-                let department_name = {
-                    let mut department_names: Vec<&str> = Vec::new();
-                    for (department, _) in &departments {
-                        department_names.push(department.as_str());
-                    }
 
-                    println!();
-                    println!("--- Add New Employee ---");
-                    println!("  Select a department:");
-                    for (i, department) in department_names.iter().enumerate() {
-                        println!("    [{i}] {department}");
-                    }
-                    println!();
-                    print!("  Department #: ");
-                    io::Write::flush(&mut io::stdout()).unwrap();
+                let mut department_names: Vec<&str> = Vec::new();
+                for (department, _) in &departments {
+                    department_names.push(department.as_str());
+                }
 
-                    let mut department_choice = String::new();
-                    io::stdin()
-                        .read_line(&mut department_choice)
-                        .expect("Failed to read line");
-                    let department_choice: u32 = match department_choice.trim().parse() {
-                        Ok(num) => num,
-                        Err(_) => {
-                            println!("  ! Invalid choice");
-                            continue;
-                        }
-                    };
-                    
-                    match department_names.get(department_choice as usize) {
-                        Some(department) => department.to_string(),
-                        None => {
-                            println!("  ! Invalid choice");
-                            continue;
-                        }
+                println!();
+                println!("--- Add New Employee ---");
+                println!("  Select a department:");
+                for (i, department) in department_names.iter().enumerate() {
+                    println!("    [{i}] {department}");
+                }
+                println!();
+                print!("  Department #: ");
+                io::Write::flush(&mut io::stdout()).unwrap();
+
+                let mut department_choice = String::new();
+                io::stdin()
+                    .read_line(&mut department_choice)
+                    .expect("Failed to read line");
+                let department_choice: u32 = match department_choice.trim().parse() {
+                    Ok(num) => num,
+                    Err(_) => {
+                        println!("  ! Invalid choice");
+                        continue;
+                    }
+                };
+
+                let department_name = match department_names.get(department_choice as usize) {
+                    Some(&department) => department.to_string(),
+                    None => {
+                        println!("  ! Invalid choice");
+                        continue;
                     }
                 };
 
@@ -99,13 +97,13 @@ fn main() {
                     }
                     None => println!("  ! Invalid department"),
                 }
-            },
+            }
             3 => {
                 println!();
                 println!("========================================");
                 println!("           COMPANY TUI            ");
                 println!("========================================");
-                
+
                 if departments.is_empty() {
                     println!("  (empty)");
                 } else {
@@ -121,13 +119,13 @@ fn main() {
                         }
                     }
                 }
-            },
+            }
             4 => {
                 println!();
                 println!("  Goodbye!");
                 println!();
                 break;
-            },
+            }
             _ => println!("  ! Invalid choice"),
         }
     }
