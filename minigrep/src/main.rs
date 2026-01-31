@@ -1,0 +1,57 @@
+use std::env;
+use std::fs;
+use std::process;
+use std::error::Error;
+
+use minigrep::{search, search_case_insensitive};
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    let config = Config::build(&args).unwrap_or_else(|err| {
+        eprintln!("Problem parsing arguments: {}", err);
+        process::exit(1);
+    });
+
+    println!("File: {}", config.file_path);
+    println!("Query: {}", config.query);
+    println!("--------------------------------");
+
+    if let Err(e) = run(config) {
+        eprintln!("Application error: {}", e);
+        process::exit(1);
+    }
+}
+
+fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    let contents = fs::read_to_string(config.file_path)?;
+
+    let results = if config.case_sensitive {
+        search(&config.query, &contents)
+    } else {
+        search_case_insensitive(&config.query, &contents)
+    };
+
+    for line in results {
+        println!("{}", line);
+    }
+
+    Ok(())
+}
+
+struct Config {
+    query: String,
+    file_path: String,
+    case_sensitive: bool,
+}
+
+impl Config {
+    fn build(args: &[String]) -> Result<Config, &'static str> {
+        if args.len() < 3 {
+            return Err("Not enough arguments");
+        }
+        let query = args[1].clone();
+        let file_path = args[2].clone();
+        let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
+        Ok(Config { query, file_path, case_sensitive })
+    }
+}
